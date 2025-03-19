@@ -9,6 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// MySQL database connection pool
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -18,6 +19,14 @@ const db = mysql.createPool({
   connectionLimit: 10, 
   queueLimit: 0
 });
+
+// Test database connection on startup
+db.getConnection()
+  .then(() => console.log("Database connected successfully"))
+  .catch((err) => {
+    console.error("Database connection failed:", err);
+    process.exit(1); // Exit the app if database connection fails
+  });
 
 // Fetch workshops
 app.get("/api/workshops", async (req, res) => {
@@ -57,5 +66,15 @@ app.post("/api/book", async (req, res) => {
   }
 });
 
+// CORS configuration (if you need to restrict it further)
+app.use(cors({
+  origin: "http://localhost:5173", // Replace with your frontend domain
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+}));
+
+// Server setup
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
