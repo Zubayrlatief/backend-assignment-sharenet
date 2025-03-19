@@ -2,11 +2,12 @@
   "name": "backend-assignment-sharenet",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "node server.js",
-    "build": "echo 'No build step required' "
-  },
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "start": "node server.js",
+  "dev": "node server.js",
+  "build": "echo 'No build step required' "
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
