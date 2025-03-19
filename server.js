@@ -19,6 +19,7 @@ const db = mysql.createPool({
   queueLimit: 0
 });
 
+// Fetch workshops
 app.get("/api/workshops", async (req, res) => {
   try {
     const [rows] = await db.execute("SELECT * FROM workshops");
@@ -29,15 +30,26 @@ app.get("/api/workshops", async (req, res) => {
   }
 });
 
+// Book a workshop
 app.post("/api/book", async (req, res) => {
   const { workshopId } = req.body;
   try {
+    const [workshop] = await db.execute("SELECT seats FROM workshops WHERE id = ?", [workshopId]);
+
+    if (workshop.length === 0) {
+      return res.status(404).json({ error: "Workshop not found" });
+    }
+
+    if (workshop[0].seats <= 0) {
+      return res.status(400).json({ error: "No seats available" });
+    }
+
     const [result] = await db.execute("UPDATE workshops SET seats = seats - 1 WHERE id = ?", [workshopId]);
-    
+
     if (result.affectedRows > 0) {
       res.json({ message: "Workshop booked!" });
     } else {
-      res.status(404).json({ error: "Workshop not found" });
+      res.status(500).json({ error: "Failed to book workshop" });
     }
   } catch (error) {
     console.error("Error booking workshop:", error);
@@ -45,5 +57,5 @@ app.post("/api/book", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
