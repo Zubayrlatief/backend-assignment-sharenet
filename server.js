@@ -27,17 +27,20 @@ db.getConnection()
     console.error("Database connection failed:", err);
     process.exit(1); // Exit the app if database connection fails
   });
-
+  app.get("/", (req, res) => {
+    res.send("Server is up and running!");
+  });
+  
 // Fetch workshops
 app.get("/api/workshops", async (req, res) => {
-  try {
-    const [rows] = await db.execute("SELECT * FROM workshops");
-    res.json(rows);
-  } catch (error) {
-    console.error("Error fetching workshops:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+    try {
+      const [rows] = await pool.execute("SELECT * FROM workshops");
+      res.json(rows);
+    } catch (error) {
+      console.error("Error fetching workshops:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
 // Book a workshop
 app.post("/api/book", async (req, res) => {
