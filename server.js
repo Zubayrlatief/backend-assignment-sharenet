@@ -9,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MySQL database connection pool
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -20,20 +19,17 @@ const db = mysql.createPool({
   queueLimit: 0
 });
 
-// Test database connection on startup
 db.getConnection()
   .then(() => console.log("Database connected successfully"))
   .catch((err) => {
     console.error("Database connection failed:", err);
-    process.exit(1); // Exit the app if database connection fails
+    process.exit(1); 
   });
 
 app.get("/", (req, res) => {
   res.send("Server is up and running!");
 });
 
-// Fetch workshops
-// Fetch workshops with available seats
 app.get("/api/workshops", async (req, res) => {
   try {
     const [rows] = await db.execute("SELECT * FROM workshops WHERE seats > 0");  // Filter only workshops with available seats
@@ -71,10 +67,8 @@ app.post("/api/book", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-// CORS configuration (if you need to restrict it further)
 app.use(cors({
-  origin: "http://localhost:5173", // Replace with your frontend domain
+  origin: "https://assignment-sharenet.vercel.app",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
 }));
