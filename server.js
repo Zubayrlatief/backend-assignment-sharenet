@@ -33,15 +33,17 @@ app.get("/", (req, res) => {
 });
 
 // Fetch workshops
+// Fetch workshops with available seats
 app.get("/api/workshops", async (req, res) => {
   try {
-    const [rows] = await db.execute("SELECT * FROM workshops");  // Fixed here
+    const [rows] = await db.execute("SELECT * FROM workshops WHERE seats > 0");  // Filter only workshops with available seats
     res.json(rows);
   } catch (error) {
     console.error("Error fetching workshops:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // Book a workshop
 app.post("/api/book", async (req, res) => {
